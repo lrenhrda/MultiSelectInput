@@ -1,0 +1,25 @@
+{
+  "name": "MultiSelectInput",
+  "version": "0.1.0",
+  "homepage": "https://github.com/lrenhrda/MultiSelectInput",
+  "authors": [
+    "Lauren Herda <lauren@laurenherda.com>"
+  ],
+  "description": "Adds input functionality to multi-<select> HTML fields.",
+  "main": "dist/js/multiselectinput.jquery.js",
+  "keywords": [
+    "field",
+    "multiple",
+    "select",
+    "multiselect",
+    "tagging"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
