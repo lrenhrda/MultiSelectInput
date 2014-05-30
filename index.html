@@ -10,18 +10,6 @@
 <link href='dist/css/multiselectinput.jquery.css' rel='stylesheet'>
 <script src="dist/js/multiselectinput.jquery.min.js"></script>
 
-<!-- SITE SCRIPTS & STYLES -->
-<script>
-;(function($) {
-  return $('select[multiple]').multiSelectInput();
-})(jQuery);
-</script>
-<style>
-body {
-  font-family: sans-serif;
-}
-</style>
-
 </head>
 <body>
 
@@ -47,6 +35,13 @@ body {
 <input type="submit" value="Submit">
 
 </form>
+
+<!-- SITE SCRIPTS & STYLES -->
+<script>
+;(function($) {
+  $("select[multiple]").multiSelectInput();
+})(jQuery);
+</script>
 
 </body>
 </html>
