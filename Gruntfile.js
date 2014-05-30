@@ -7,16 +7,16 @@ module.exports = function(grunt) {
         sourceMap: true,
         expand: true
       },
-      compile: {
+      multiselectinput: {
         files: {
-          "js/multiselectinput.jquery.js": ["coffeescript/multiselectinput.jquery.coffee"]
+          "dist/js/multiselectinput.jquery.js": ["src/coffeescript/multiselectinput.jquery.coffee"]
         }
       }
     },
     stylus: {
-      compile: {
+      multiselectinput: {
         files: {
-          "css/multiselectinput.jquery.css": ["stylus/**/*.styl"]
+          "dist/css/multiselectinput.jquery.css": ["src/stylus/**/*.styl"]
         }
       }
     },
@@ -33,25 +33,17 @@ module.exports = function(grunt) {
       },
       multiselectinput: {
         files: {
-          "dist/js/multiselectinput.jquery.min.js": ["js/multiselectinput.jquery.js"]
+          "dist/js/multiselectinput.jquery.min.js": ["dist/js/multiselectinput.jquery.js"]
         }
-      }
-    },
-    copy: {
-      main: {
-        files: [
-          { expand: true, src: "css/multiselectinput.jquery.css", dest: "dist/", filter: "isFile" },
-          { expand: true, src: "js/multiselectinput.jquery.js", dest: "dist/", filter: "isFile" }
-        ]
       }
     },
     watch: {
       stylus: {
-        files: ["stylus/**/*.styl"],
+        files: ["src/stylus/**/*.styl"],
         tasks: ["stylus"]
       },
       coffee: {
-        files: ["coffeescript/multiselectinput.jquery.coffee"],
+        files: ["src/coffeescript/multiselectinput.jquery.coffee"],
         tasks: ["coffee"]
       }
     }
@@ -61,11 +53,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.registerTask("develop", ["watch"]);
   grunt.registerTask("default", ["stylus", "coffee"]);
-  grunt.registerTask("distribute", ["stylus", "coffee", "uglify", "copy"]);
+  grunt.registerTask("develop", ["watch"]);
+  grunt.registerTask("dist", ["stylus", "coffee", "uglify"]);
+
   grunt.event.on("watch", function(action, filepath) {
     grunt.log.writeln(filepath + " has " + action);
   });
