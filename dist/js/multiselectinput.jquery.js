@@ -1,7 +1,15 @@
-;(function($){
+(function() {
+  var $;
+
+  $ = jQuery;
+
   $.fn.extend({
     multiSelectInput: function(options) {
       var log, settings, showDropdown;
+      settings = {
+        separator: ',',
+        debug: false
+      };
       settings = $.extend(settings, options);
       log = function(msg) {
         if (settings.debug) {
@@ -15,14 +23,12 @@
         return el.dispatchEvent(e);
       };
       return this.each(function() {
-        var $addbutton, $alreadyExists, $counter, $form, $inputbox, $selectbox, $trigger, $widget, addIconSvg, setCounter, tagIconSvg;
+        var $addbutton, $alreadyExists, $counter, $form, $inputbox, $selectbox, $trigger, $widget, addOptions, setCounter;
         $selectbox = $(this);
-        tagIconSvg = '<svg class="js-multiselectinput__icon" width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"><g id="16" sketch:type="MSArtboardGroup" fill="#000000"><path d="M0,0 L4.4408921e-16,7.06237793 L8.95344413,16.0158221 L15.9847108,8.9845554 L7.04707304,0.0469176489 L0,0 Z M3.5,5 C4.32842712,5 5,4.32842712 5,3.5 C5,2.67157288 4.32842712,2 3.5,2 C2.67157288,2 2,2.67157288 2,3.5 C2,4.32842712 2.67157288,5 3.5,5 Z" id="Path-1" sketch:type="MSShapeGroup"></path></g></g></svg>';
-        addIconSvg = '<svg class="js-multiselectinput__icon" width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"><g id="16" sketch:type="MSArtboardGroup" fill="#000000"><path d="M6,6 L6,0 L10,0 L10,6 L16,6 L16,10 L10,10 L10,16 L6,16 L6,10 L0,10 L0,6 L6,6 Z" id="Rectangle-1" sketch:type="MSShapeGroup"></path></g></g></svg>';
-        $trigger = $('<button type="button" class="js-multiselectinput__pick">' + tagIconSvg + '</button>');
+        $trigger = $('<button type="button" class="js-multiselectinput__pick">▾</button>');
         $counter = $('<span class="js-multiselectinput__count"></span>');
         $inputbox = $('<input type="text" class="js-multiselectinput__input" placeholder="Create & Add...">');
-        $addbutton = $('<button type="button" class="js-multiselectinput__add" disabled>' + addIconSvg + '</button>');
+        $addbutton = $('<button type="button" class="js-multiselectinput__add" disabled>+</button>');
         $widget = $selectbox.wrap('<div class="js-multiselectinput"></div>').parent();
         $form = $(this).parents('form').eq(0);
         if ($.msiIsMobile.iOS()) {
@@ -68,20 +74,26 @@
             return $counter.text('');
           }
         };
-        $addbutton.on('click', function(e) {
-          var $existing, $newOption;
-          if ($inputbox.val()) {
-            $existing = $alreadyExists($inputbox.val());
+        addOptions = function(text) {
+          var split;
+          split = settings.separator ? text.split(settings.separator) : [text];
+          return $.each(split, function(i, v) {
+            var $existing, $newOption, term;
+            term = v.trim();
+            $existing = $alreadyExists(term);
             if ($existing) {
-              console.log($inputbox.val() + ", exists, true");
-              $existing.prop('selected', true);
+              return $existing.prop('selected', true);
             } else {
-              $newOption = $('<option>').val($inputbox.val());
-              $newOption.text($inputbox.val());
+              $newOption = $('<option>').val(term);
+              $newOption.text(term);
               $selectbox.append($newOption);
-              console.log($newOption.val() + ", added, true");
-              $newOption.prop('selected', true);
+              return $newOption.prop('selected', true);
             }
+          });
+        };
+        $addbutton.on('click', function(e) {
+          if ($inputbox.val()) {
+            addOptions($inputbox.val());
             $inputbox.val('');
             setCounter($selectbox.find(":selected").size());
           }
@@ -98,12 +110,18 @@
           }
           return false;
         });
-        $selectbox.on('blur', function(e) {
-          $widget.removeAttr('data-expanded');
-          setCounter($selectbox.find(":selected").size());
-          $inputbox.focus();
-          $inputbox.click();
-          return false;
+        $selectbox.on({
+          'focus': function(e) {
+            $widget.attr('data-focus', true);
+            return false;
+          },
+          'blur': function(e) {
+            $widget.removeAttr('data-expanded', 'data-focus');
+            setCounter($selectbox.find(":selected").size());
+            $inputbox.focus();
+            $inputbox.click();
+            return false;
+          }
         });
         $selectbox.on('mousedown', 'option', function(e) {
           e.preventDefault();
@@ -151,4 +169,7 @@
       }
     }
   });
-})(jQuery);
+
+}).call(this);
+
+//# sourceMappingURL=multiselectinput.jquery.js.map

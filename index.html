@@ -7,15 +7,19 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <!-- MULTISELECTINPUT -->
-<link href='css/multiselectinput.jquery.css' rel='stylesheet'>
-<script src="js/multiselectinput.jquery.js"></script>
+<link href='dist/css/multiselectinput.jquery.css' rel='stylesheet'>
+<script src="dist/js/multiselectinput.jquery.min.js"></script>
 
 <!-- SITE SCRIPTS & STYLES -->
-<script src="js/index.js"></script>
+<script>
+;(function($) {
+  return $('select[multiple][data-toggle="multiselectinput"]').multiSelectInput();
+})(jQuery);
+</script>
 <style>
-    body {
-        font-family: sans-serif;
-    }
+body {
+  font-family: sans-serif;
+}
 </style>
 
 </head>
