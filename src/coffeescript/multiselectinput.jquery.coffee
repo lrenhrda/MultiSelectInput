@@ -5,10 +5,9 @@ $ = jQuery
 $.fn.extend
   multiSelectInput: (options) ->
     # Default settings
-    # settings =
-    #   option1: true
-    #   option2: false
-    #   debug: false
+    settings =
+      separator: ','
+      debug: false
 
     # Merge default settings with options.
     settings = $.extend settings, options
@@ -25,19 +24,13 @@ $.fn.extend
 
     # _Insert magic here._
     return @each ()->
-      # log "Preparing magic show."
-      # You can use your settings in here now.
-      # log "Option 1 value: #{settings.option1}"
 
       $selectbox = $(this)
-      
-      tagIconSvg = '<svg class="js-multiselectinput__icon" width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"><g id="16" sketch:type="MSArtboardGroup" fill="#000000"><path d="M0,0 L4.4408921e-16,7.06237793 L8.95344413,16.0158221 L15.9847108,8.9845554 L7.04707304,0.0469176489 L0,0 Z M3.5,5 C4.32842712,5 5,4.32842712 5,3.5 C5,2.67157288 4.32842712,2 3.5,2 C2.67157288,2 2,2.67157288 2,3.5 C2,4.32842712 2.67157288,5 3.5,5 Z" id="Path-1" sketch:type="MSShapeGroup"></path></g></g></svg>'
-      addIconSvg = '<svg class="js-multiselectinput__icon" width="100%" height="100%" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"><g id="16" sketch:type="MSArtboardGroup" fill="#000000"><path d="M6,6 L6,0 L10,0 L10,6 L16,6 L16,10 L10,10 L10,16 L6,16 L6,10 L0,10 L0,6 L6,6 Z" id="Rectangle-1" sketch:type="MSShapeGroup"></path></g></g></svg>'
 
-      $trigger = $('<button type="button" class="js-multiselectinput__pick">' + tagIconSvg + '</button>')
+      $trigger = $('<button type="button" class="js-multiselectinput__pick">▾</button>')
       $counter = $('<span class="js-multiselectinput__count"></span>')
       $inputbox = $('<input type="text" class="js-multiselectinput__input" placeholder="Create & Add...">')
-      $addbutton = $('<button type="button" class="js-multiselectinput__add" disabled>' + addIconSvg + '</button>')
+      $addbutton = $('<button type="button" class="js-multiselectinput__add" disabled>+</button>')
       $widget = $selectbox.wrap('<div class="js-multiselectinput"></div>').parent()
       $form = $(this).parents('form').eq(0)
 
@@ -76,18 +69,22 @@ $.fn.extend
         else 
           $counter.text ''
 
-      $addbutton.on 'click', (e)->
-        if $inputbox.val()
-          $existing = $alreadyExists($inputbox.val())
-          if $existing 
-            console.log $inputbox.val() + ", exists, true"
+      addOptions = (text)->
+        split = if settings.separator then text.split(settings.separator) else [text]
+        $.each split, (i, v)->
+          term = v.trim()
+          $existing = $alreadyExists(term)
+          if $existing
             $existing.prop 'selected', true 
           else 
-            $newOption = $('<option>').val $inputbox.val()
-            $newOption.text $inputbox.val()
+            $newOption = $('<option>').val term 
+            $newOption.text term
             $selectbox.append $newOption
-            console.log $newOption.val() + ", added, true"
             $newOption.prop 'selected', true
+
+      $addbutton.on 'click', (e)->
+        if $inputbox.val()
+          addOptions $inputbox.val()
           $inputbox.val('')
           setCounter($selectbox.find(":selected").size())
           # Some AJAX here to add the tag to the DB
@@ -103,12 +100,16 @@ $.fn.extend
           $widget.attr 'data-expanded', true
         false
       
-      $selectbox.on 'blur', (e)->
-        $widget.removeAttr 'data-expanded'
-        setCounter($selectbox.find(":selected").size())
-        $inputbox.focus()
-        $inputbox.click()
-        false
+      $selectbox.on
+        'focus': (e)->
+          $widget.attr 'data-focus', true
+          false 
+        'blur': (e)->
+          $widget.removeAttr 'data-expanded', 'data-focus'
+          setCounter($selectbox.find(":selected").size())
+          $inputbox.focus()
+          $inputbox.click()
+          false
 
       $selectbox.on 'mousedown', 'option', (e)->
         e.preventDefault()
